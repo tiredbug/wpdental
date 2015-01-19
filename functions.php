@@ -1,5 +1,63 @@
 <?php
 
+<?php
+
+/**
+ * Remove Menu for User 'demo' and 'asisten'
+ */
+
+function remove_menus()
+{
+    global $menu;
+    global $current_user;
+    get_currentuserinfo();
+
+    if($current_user->user_login == 'demo' || $current_user->user_login == 'asisten')
+    {
+        $restricted = array(__('Posts'),
+                            __('Media'),
+                            __('Links'),
+                            __('Pages'),
+                            __('Comments'),
+                            __('Appearance'),
+                            __('Plugins'),
+                            __('Users'),
+                            __('Tools'),
+                            __('New'),
+                            __('Settings')
+        );
+        end ($menu);
+        while (prev($menu)){
+            $value = explode(' ',$menu[key($menu)][0]);
+            if(in_array($value[0] != NULL?$value[0]:"" , $restricted)){unset($menu[key($menu)]);}
+        }// end while
+
+    }// end if
+}
+add_action('admin_menu', 'remove_menus');
+
+function wp_dental_admin_head_stuff() {
+
+  
+    global $menu;
+    global $current_user;
+    get_currentuserinfo();
+
+    if($current_user->user_login == 'demo' || $current_user->user_login == 'asisten')
+    { ?>
+
+	<style>
+    p#wp-version-message, li.post-count, li.comment-count, #wpadminbar li#wp-admin-bar-comments, #wpadminbar li#wp-admin-bar-new-post, #wpadminbar li#wp-admin-bar-new-media { display: none;}
+	</style>
+
+
+  <?php 
+  }// end if
+}
+
+add_action('admin_head', 'wp_dental_admin_head_stuff');
+add_action('wp_head', 'wp_dental_admin_head_stuff');
+
 /**
  * Exclude List Comments for WP Dental
  */
