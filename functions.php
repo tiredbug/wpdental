@@ -1,7 +1,5 @@
 <?php
 
-<?php
-
 /**
  * Remove Menu for User 'demo' and 'asisten'
  */
