@@ -57,6 +57,16 @@ add_action('admin_head', 'wp_dental_admin_head_stuff');
 add_action('wp_head', 'wp_dental_admin_head_stuff');
 
 /**
+ * Hide Comment status (uncheck on screen option)  for WP Dental
+ */
+function wpdental_hidden_meta_boxes( $hidden ) {
+    $hidden[] = 'commentstatusdiv';
+    return $hidden;
+}
+
+add_filter( 'hidden_meta_boxes', 'wpdental_hidden_meta_boxes' );
+
+/**
  * Exclude List Comments for WP Dental
  */
  function exclude_comment_list($clauses) {
