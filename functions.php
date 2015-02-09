@@ -57,16 +57,6 @@ add_action('admin_head', 'wp_dental_admin_head_stuff');
 add_action('wp_head', 'wp_dental_admin_head_stuff');
 
 /**
- * Hide Comment status (uncheck on screen option)  for WP Dental
- */
-function wpdental_hidden_meta_boxes( $hidden ) {
-    $hidden[] = 'commentstatusdiv';
-    return $hidden;
-}
-
-add_filter( 'hidden_meta_boxes', 'wpdental_hidden_meta_boxes' );
-
-/**
  * Exclude List Comments for WP Dental
  */
  function exclude_comment_list($clauses) {
@@ -357,5 +347,40 @@ function custom_glance_items( $items = array() ) {
 }
 
 add_filter( 'dashboard_glance_items', 'custom_glance_items', 10, 1 );
+
+function wpdental_filter_title( $title, $post_id ) {
+    if( $new_title = get_post_meta( $post_id, 'wpdental_name', true ) ) {
+        return $new_title;
+    }
+    return $title;
+}
+add_filter( 'the_title', 'wpdental_filter_title', 10, 2 );
+
+function wpdental_hidden_meta_boxes( $hidden ) {
+    $hidden[] = 'commentstatusdiv';
+    $hidden[] = 'commentsdiv';
+    return $hidden;
+}
+add_filter( 'hidden_meta_boxes', 'wpdental_hidden_meta_boxes' );
+
+function wpdental_search_join ($join) {
+    global $wp_query, $pagenow, $wpdb;
+    if (!empty($wp_query->query_vars['s'])) {
+        $join .='LEFT JOIN '.$wpdb->postmeta. ' ON '. $wpdb->posts . '.ID = ' . $wpdb->postmeta . '.post_id ';
+    }
+    return $join;
+}
+add_filter('posts_join', 'wpdental_search_join' );
+
+function wpdental_search_where( $where ) {
+    global $wp_query, $pagenow, $wpdb;
+    if (!empty($wp_query->query_vars['s'])) {
+        $where = preg_replace(
+       "/\(\s*".$wpdb->posts.".post_title\s+LIKE\s*(\'[^\']+\')\s*\)/",
+       "(".$wpdb->posts.".post_title LIKE $1) OR (".$wpdb->postmeta.".meta_value LIKE $1)", $where );
+    }
+    return $where;
+}
+add_filter( 'posts_where', 'wpdental_search_where' );
 
 ?>
