@@ -49,7 +49,6 @@ function register_wpdental() {
          	'menu_icon' => 'dashicons-portfolio'
         )
     );
-    flush_rewrite_rules();
 }
 
 add_action( 'init', 'register_wpdental' );
